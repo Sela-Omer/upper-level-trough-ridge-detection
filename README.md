@@ -13,6 +13,7 @@ from Hugging Face and cached locally; neither repository needs to be cloned.
 
 | Resource | Repository |
 | --- | --- |
+| Interactive project website | [Upper-Level Atlas](https://sela-omer.github.io/upper-level-trough-ridge-detection/) |
 | Source code | [Sela-Omer/upper-level-trough-ridge-detection](https://github.com/Sela-Omer/upper-level-trough-ridge-detection) |
 | Dataset | [Omer-Sela/upper-level-trough-ridge-detection-data](https://huggingface.co/datasets/Omer-Sela/upper-level-trough-ridge-detection-data) |
 | Model weights | [Omer-Sela/upper-level-trough-ridge-detection-models](https://huggingface.co/Omer-Sela/upper-level-trough-ridge-detection-models) |
