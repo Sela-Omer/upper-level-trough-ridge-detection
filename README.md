@@ -3,6 +3,7 @@
 ## Application in the Mediterranean
 
 [![Project Page](https://img.shields.io/badge/Project%20Page-2196F3?style=flat&logo=googlechrome&logoColor=white)](https://sela-omer.github.io/upper-level-trough-ridge-detection/)
+[![Code](https://img.shields.io/badge/Code-181717?style=flat&logo=github&logoColor=white)](https://github.com/Sela-Omer/upper-level-trough-ridge-detection)
 [![Dataset](https://img.shields.io/badge/Dataset-FFD21E?style=flat&logo=huggingface&logoColor=000)](https://huggingface.co/datasets/Omer-Sela/upper-level-trough-ridge-detection-data)
 [![Checkpoints](https://img.shields.io/badge/Checkpoints-FFD21E?style=flat&logo=huggingface&logoColor=000)](https://huggingface.co/Omer-Sela/upper-level-trough-ridge-detection-models)
 [![License](https://img.shields.io/badge/License-BSD--3--Clause-4051B5?style=flat)](LICENSE)
@@ -17,6 +18,7 @@ The project provides a reproducible, physics-informed pipeline for training and 
 | --- | --- |
 | Interactive project page | [Explore benchmark scenes and climatology](https://sela-omer.github.io/upper-level-trough-ridge-detection/) |
 | Source code | [Sela-Omer/upper-level-trough-ridge-detection](https://github.com/Sela-Omer/upper-level-trough-ridge-detection) |
+| Project-page source | [Sela-Omer/upper-level-trough-ridge-detection-site](https://github.com/Sela-Omer/upper-level-trough-ridge-detection-site) |
 | Dataset | [Omer-Sela/upper-level-trough-ridge-detection-data](https://huggingface.co/datasets/Omer-Sela/upper-level-trough-ridge-detection-data) |
 | Model checkpoints | [Omer-Sela/upper-level-trough-ridge-detection-models](https://huggingface.co/Omer-Sela/upper-level-trough-ridge-detection-models) |
 
