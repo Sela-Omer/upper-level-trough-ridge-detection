@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ultr-detection"
+version = "0.1.0"
+description = "Physics-informed detection of upper-level trough and ridge axes"
+readme = "README.md"
+license = "BSD-3-Clause"
+requires-python = ">=3.12"
+dependencies = [
+  "huggingface-hub>=1.30,<2",
+  "lightning>=2.4",
+  "netCDF4>=1.7",
+  "numpy>=1.26",
+  "pandas>=2.2",
+  "pyarrow>=18",
+  "PyYAML>=6.0",
+  "safetensors>=0.5",
+  "scikit-image>=0.24",
+  "scipy>=1.14",
+  "torch>=2.4",
+  "wandb>=0.18",
+  "xarray>=2025.1",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8.3", "pytest-cov>=6.0"]
+dev = ["mypy>=1.14", "pre-commit>=4.0", "ruff>=0.9", "ultr-detection[test]"]
+
+[project.scripts]
+ultr = "ultr_detection.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ultr_detection"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-config --strict-markers"
+testpaths = ["tests"]
+markers = [
+  "paper: reproduces published cross-validation results",
+  "slow: long-running test excluded from the default developer loop",
+  "remote: opt-in test against authenticated remote release infrastructure",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+packages = ["ultr_detection"]
+
+[[tool.mypy.overrides]]
+module = "ultr_detection.postprocess"
+disable_error_code = ["no-untyped-call"]

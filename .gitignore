@@ -1,0 +1,12 @@
+/.build/
+/.pytest_cache/
+/.ruff_cache/
+/.mypy_cache/
+/.venv/
+/.idea/
+/**/__pycache__/
+*.py[cod]
+*.egg-info/
+/artifacts/
+/lightning_logs/
+/wandb/

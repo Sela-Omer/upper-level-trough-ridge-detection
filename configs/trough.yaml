@@ -1,0 +1,11 @@
+task: trough
+folds: 10
+fold_seed: 12345
+training_seed: 42
+batch_size: 16
+learning_rate: 0.0003
+weight_decay: 0.00001
+max_epochs: 100
+early_stopping_patience: 15
+axis_target_dilation_px: 1
+side_supervision_radius_px: 5

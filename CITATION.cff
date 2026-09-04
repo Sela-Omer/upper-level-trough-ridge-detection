@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the accompanying paper."
+title: "Upper-level trough and ridge detection"
+type: software
+version: 0.1.0
+license: BSD-3-Clause
+authors:
+  - family-names: Ariel
+    given-names: Ofir
+  - family-names: Sela
+    given-names: Omer
+  - family-names: Saaroni
+    given-names: Hadas
+  - family-names: Ziv
+    given-names: Baruch
+repository-code: "https://github.com/Sela-Omer/upper-level-trough-ridge-detection"
