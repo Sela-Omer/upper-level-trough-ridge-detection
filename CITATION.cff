@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite the accompanying paper."
-title: "Upper-level trough and ridge detection"
+title: "Detection of Upper-Level Troughs and Ridges Using Deep Learning"
 type: software
 version: 0.1.0
 license: BSD-3-Clause
@@ -14,3 +14,11 @@ authors:
   - family-names: Ziv
     given-names: Baruch
 repository-code: "https://github.com/Sela-Omer/upper-level-trough-ridge-detection"
+url: "https://sela-omer.github.io/upper-level-trough-ridge-detection/"
+keywords:
+  - atmospheric science
+  - deep learning
+  - ERA5
+  - meteorology
+  - trough detection
+  - ridge detection

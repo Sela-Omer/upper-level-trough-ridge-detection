@@ -9,6 +9,16 @@ description = "Physics-informed detection of upper-level trough and ridge axes"
 readme = "README.md"
 license = "BSD-3-Clause"
 requires-python = ">=3.12"
+keywords = ["atmospheric-science", "deep-learning", "era5", "meteorology", "trough-detection", "ridge-detection"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: BSD License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Atmospheric Science",
+]
 dependencies = [
   "huggingface-hub>=1.30,<2",
   "lightning>=2.4",
@@ -31,6 +41,12 @@ dev = ["mypy>=1.14", "pre-commit>=4.0", "ruff>=0.9", "ultr-detection[test]"]
 
 [project.scripts]
 ultr = "ultr_detection.cli:main"
+
+[project.urls]
+Homepage = "https://sela-omer.github.io/upper-level-trough-ridge-detection/"
+Repository = "https://github.com/Sela-Omer/upper-level-trough-ridge-detection"
+Dataset = "https://huggingface.co/datasets/Omer-Sela/upper-level-trough-ridge-detection-data"
+Checkpoints = "https://huggingface.co/Omer-Sela/upper-level-trough-ridge-detection-models"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ultr_detection"]
