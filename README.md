@@ -18,7 +18,6 @@ The project provides a reproducible, physics-informed pipeline for training and 
 | --- | --- |
 | Interactive project page | [Explore benchmark scenes and climatology](https://sela-omer.github.io/upper-level-trough-ridge-detection/) |
 | Source code | [Sela-Omer/upper-level-trough-ridge-detection](https://github.com/Sela-Omer/upper-level-trough-ridge-detection) |
-| Project-page source | [Sela-Omer/upper-level-trough-ridge-detection-site](https://github.com/Sela-Omer/upper-level-trough-ridge-detection-site) |
 | Dataset | [Omer-Sela/upper-level-trough-ridge-detection-data](https://huggingface.co/datasets/Omer-Sela/upper-level-trough-ridge-detection-data) |
 | Model checkpoints | [Omer-Sela/upper-level-trough-ridge-detection-models](https://huggingface.co/Omer-Sela/upper-level-trough-ridge-detection-models) |
 
