@@ -23,9 +23,12 @@ variables are:
 
 Coordinates include `sample_id`, `task`, `valid_time`, `latitude`, and
 `longitude`. Z500 is geopotential height in metres; U500 and V500 are in
-m s⁻¹. `metadata/samples.parquet` provides task labels and deterministic fold
-assignments. `metadata/axes.parquet` stores the expert B-spline axes used for
-curve evaluation.
+m s⁻¹. `metadata/samples.parquet` is an ordinary tabular Parquet catalog that
+provides task labels, timestamps, provenance, and deterministic fold
+assignments. `metadata/axes.parquet` is GeoParquet 1.1: its `geometry` column
+contains expert axes as WKB LineStrings in OGC:CRS84, with a GeoParquet `bbox`
+covering for spatial filtering. The retained `curve_x` and `curve_y` spline
+coordinates are the authoritative inputs used for the paper's curve metrics.
 
 `expert_annotations.nc` provides thin raster versions of the expert axes for
 visualization and interoperability. The Parquet spline catalog remains the
