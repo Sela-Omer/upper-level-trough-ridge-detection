@@ -1,0 +1,21 @@
+{
+  "name": "Detection of Upper-Level Troughs and Ridges Using Deep Learning",
+  "short_name": "ULT/R Detection",
+  "description": "Interactive research project page for upper-level trough and ridge detection in the Mediterranean.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#071b24",
+  "theme_color": "#071b24",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "favicon-96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    }
+  ]
+}

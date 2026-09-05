@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sela-omer.github.io/upper-level-trough-ridge-detection/sitemap.xml
