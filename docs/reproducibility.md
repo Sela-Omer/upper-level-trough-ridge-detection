@@ -40,18 +40,27 @@ The expected results are:
 
 ## Training configurations
 
-The tracked YAML files contain the configurations used for the released
-training workflow. The trough configuration uses batch size 16; the ridge
-configuration uses batch size 8. Random seeds and deterministic data folds are
+The tracked YAML recipes are self-contained: they define the model architecture,
+monthly wind normalization, cross-validation design, and optimization defaults.
+Training therefore requires the dataset repository but never uses an existing
+checkpoint as configuration input. The trough recipe uses batch size 16 and the
+ridge recipe uses batch size 8. Random seeds and deterministic data folds are
 fixed, although floating-point reductions and stochastic GPU kernels can vary
 across hardware and library versions.
+
+To recreate the dependency environment validated on Ubuntu 22.04 with Python
+3.12, install through the versioned constraints file:
+
+```bash
+python -m pip install -c constraints/reproducibility.txt -e ".[dev]"
+```
 
 ## Validation commands
 
 Install development dependencies and run the portable test suite:
 
 ```bash
-python -m pip install -e ".[dev]"
+python -m pip install -c constraints/reproducibility.txt -e ".[dev]"
 ruff format --check .
 ruff check .
 mypy src/ultr_detection
@@ -71,4 +80,7 @@ ULTR_RUN_PAPER_TESTS=1 pytest tests/paper -q
 ```
 
 The optional environment variables `ULTR_DATA_REVISION` and
-`ULTR_MODEL_REVISION` pin the two Hub snapshots used by these tests.
+`ULTR_MODEL_REVISION` pin the two Hub snapshots used by these tests. The
+dedicated GitHub Actions paper-regression workflow fixes both revisions to the
+validated release commits and runs on demand and whenever a GitHub release is
+published.

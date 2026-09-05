@@ -1,0 +1,31 @@
+name: Paper regression
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: paper-regression-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      ULTR_RUN_PAPER_TESTS: "1"
+      ULTR_DATA_REVISION: f769c77cbfb34c5bd80aa8709798b311055d4306
+      ULTR_MODEL_REVISION: 2844092cc9eb856bbfd7a934c39954638ff66f4a
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -c constraints/reproducibility.txt -e ".[test]"
+      - run: pytest tests/paper -q

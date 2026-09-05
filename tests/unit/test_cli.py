@@ -10,10 +10,8 @@ def test_train_parser_exposes_reproducibility_controls() -> None:
             "train",
             "--dataset",
             "owner/data",
-            "--models",
-            "owner/models",
-            "--task",
-            "trough",
+            "--config",
+            "configs/trough.yaml",
             "--fold",
             "3",
             "--output",
@@ -21,10 +19,19 @@ def test_train_parser_exposes_reproducibility_controls() -> None:
         ]
     )
 
-    assert arguments.task is Task.TROUGH
     assert arguments.dataset == "owner/data"
-    assert arguments.models == "owner/models"
+    assert not hasattr(arguments, "models")
+    assert not hasattr(arguments, "task")
     assert arguments.fold == 3
-    assert arguments.seed == 42
-    assert arguments.max_epochs == 100
-    assert arguments.patience == 15
+    assert arguments.seed is None
+    assert arguments.max_epochs is None
+    assert arguments.patience is None
+
+
+def test_inference_parser_retains_model_selection() -> None:
+    arguments = build_parser().parse_args(
+        ["infer", "--task", "trough", "--sample-id", "20180101T0000"]
+    )
+
+    assert arguments.task is Task.TROUGH
+    assert arguments.models

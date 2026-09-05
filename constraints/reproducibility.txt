@@ -1,0 +1,20 @@
+# Dependency versions validated on Ubuntu 22.04 with Python 3.12.
+# Install with: python -m pip install -c constraints/reproducibility.txt -e ".[dev]"
+huggingface-hub==1.30.0
+lightning==2.6.5
+mypy==2.3.1
+netCDF4==1.7.4
+numpy==2.4.2
+pandas==3.0.5
+pre-commit==4.6.2
+pyarrow==25.0.1
+pytest==9.1.1
+pytest-cov==7.1.0
+PyYAML==6.0.3
+ruff==0.16.6
+safetensors==0.8.0
+scikit-image==0.26.0
+scipy==1.18.1
+torch==2.14.0
+wandb==0.29.0
+xarray==2026.7.0

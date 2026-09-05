@@ -23,13 +23,27 @@ The project provides a reproducible, physics-informed pipeline for training and 
 
 ## Installation
 
-Python 3.12 or newer is required.
+Python 3.12 or newer is required. On Ubuntu 22.04, where the system Python is
+older, [uv](https://docs.astral.sh/uv/getting-started/installation/) can install
+Python 3.12 without modifying the system interpreter:
+
+```bash
+uv python install 3.12
+uv venv --python 3.12 --seed
+source .venv/bin/activate
+python -m pip install -e .
+```
+
+If Python 3.12 is already installed:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Windows PowerShell: .venv\Scripts\Activate.ps1
 python -m pip install -e .
 ```
+
+For an archival environment using the dependency versions validated by the
+authors, add `-c constraints/reproducibility.txt` to the installation command.
 
 ## Inference
 
@@ -55,14 +69,32 @@ Train one cross-validation fold with the paper configuration:
 
 ```bash
 ultr train \
-  --task trough \
+  --config configs/trough.yaml \
+  --fold 0 \
+  --output artifacts/trough/fold_0 \
+  --accelerator gpu
+```
+
+The versioned recipe defines the detector architecture, wind normalization,
+cross-validation design, and default optimization settings. Command-line
+options such as `--batch-size`, `--learning-rate`, and `--max-epochs` can
+override optimization defaults. Training does not download an existing model
+or checkpoint.
+
+Weights & Biases logging is optional. Enable it explicitly when wanted:
+
+```bash
+ultr train \
+  --config configs/trough.yaml \
   --fold 0 \
   --output artifacts/trough/fold_0 \
   --accelerator gpu \
   --wandb-project upper-level-trough-ridge
 ```
 
-Weights & Biases logging is optional. Each output directory contains tensor-only `model.safetensors` weights and the complete `config.json` required to reload the model. Task recipes are versioned in [`configs/`](configs/).
+Each output directory contains tensor-only `model.safetensors` weights, the
+complete `config.json` needed to reload the model, and the resolved training
+settings in `training.json`.
 
 ## Reproducing the reported evaluation
 

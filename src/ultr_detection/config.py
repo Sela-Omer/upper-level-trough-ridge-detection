@@ -8,6 +8,8 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 
 class Task(StrEnum):
     """Synoptic feature detected by a model."""
@@ -73,10 +75,9 @@ class ModelConfig:
             raise ValueError("The selected paper model does not use CVA as an input channel")
 
     @classmethod
-    def from_checkpoint_json(cls, path: str | Path) -> ModelConfig:
-        """Read a checkpoint configuration and validate the supported architecture."""
+    def from_dict(cls, raw: dict[str, Any]) -> ModelConfig:
+        """Validate a public or historical model-configuration mapping."""
 
-        raw = json.loads(Path(path).read_text(encoding="utf-8"))
         if "task" in raw:
             wind = raw["wind"]
             return cls(
@@ -140,9 +141,93 @@ class ModelConfig:
             ),
         )
 
+    @classmethod
+    def from_checkpoint_json(cls, path: str | Path) -> ModelConfig:
+        """Read a checkpoint configuration and validate the supported architecture."""
+
+        raw: dict[str, Any] = json.loads(Path(path).read_text(encoding="utf-8"))
+        return cls.from_dict(raw)
+
     def to_dict(self) -> dict[str, Any]:
         """Return the stable public configuration schema."""
 
         value = asdict(self)
         value["task"] = self.task.value
         return value
+
+
+@dataclass(frozen=True, slots=True)
+class CrossValidationConfig:
+    """Deterministic cross-validation design used for the paper."""
+
+    folds: int
+    fold_seed: int
+
+    def __post_init__(self) -> None:
+        if self.folds <= 1:
+            raise ValueError("cross_validation.folds must be greater than one")
+
+
+@dataclass(frozen=True, slots=True)
+class OptimizationConfig:
+    """Default optimization settings for one training run."""
+
+    seed: int
+    batch_size: int
+    learning_rate: float
+    weight_decay: float
+    max_epochs: int
+    early_stopping_patience: int
+
+    def __post_init__(self) -> None:
+        if self.batch_size <= 0:
+            raise ValueError("training.batch_size must be positive")
+        if self.learning_rate <= 0 or self.weight_decay < 0:
+            raise ValueError(
+                "training learning_rate must be positive and weight_decay non-negative"
+            )
+        if self.max_epochs <= 0 or self.early_stopping_patience < 0:
+            raise ValueError("training epochs must be positive and patience non-negative")
+
+
+@dataclass(frozen=True, slots=True)
+class TrainingRecipe:
+    """Complete, versioned recipe needed to train a detector from the dataset."""
+
+    schema_version: int
+    task: Task
+    cross_validation: CrossValidationConfig
+    training: OptimizationConfig
+    model: ModelConfig
+
+    def __post_init__(self) -> None:
+        if self.schema_version != 1:
+            raise ValueError(f"Unsupported training-recipe schema: {self.schema_version}")
+        if self.task is not self.model.task:
+            raise ValueError("Recipe task must match model.task")
+
+    @classmethod
+    def from_yaml(cls, path: str | Path) -> TrainingRecipe:
+        """Load and strictly validate a public training recipe."""
+
+        raw = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+        if not isinstance(raw, dict):
+            raise ValueError("Training recipe must be a YAML mapping")
+        expected = {"schema_version", "task", "cross_validation", "training", "model"}
+        unknown = set(raw) - expected
+        missing = expected - set(raw)
+        if unknown or missing:
+            detail = f"missing={sorted(missing)}, unknown={sorted(unknown)}"
+            raise ValueError(f"Invalid training recipe keys; {detail}")
+        cross_validation = raw["cross_validation"]
+        training = raw["training"]
+        model = raw["model"]
+        if not all(isinstance(value, dict) for value in (cross_validation, training, model)):
+            raise ValueError("cross_validation, training, and model must be YAML mappings")
+        return cls(
+            schema_version=int(raw["schema_version"]),
+            task=Task(raw["task"]),
+            cross_validation=CrossValidationConfig(**cross_validation),
+            training=OptimizationConfig(**training),
+            model=ModelConfig.from_dict(model),
+        )

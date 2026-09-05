@@ -1,13 +1,30 @@
 from __future__ import annotations
 
+from pathlib import Path
+
+import pytest
 import torch
 
 from ultr_detection.assets import AssetRoots
-from ultr_detection.config import ModelConfig, Task
+from ultr_detection.config import ModelConfig, Task, TrainingRecipe
 from ultr_detection.data import UpperLevelDataset, collate_samples
 from ultr_detection.losses import DetectionLoss
 from ultr_detection.model import UpperLevelDetector
 from ultr_detection.training import DetectionLightningModule
+
+REPOSITORY_ROOT = Path(__file__).parents[2]
+
+
+@pytest.mark.parametrize("task", list(Task))
+def test_local_recipe_model_matches_released_fold_config(
+    release_roots: AssetRoots, task: Task
+) -> None:
+    recipe = TrainingRecipe.from_yaml(REPOSITORY_ROOT / "configs" / f"{task.value}.yaml")
+    released = ModelConfig.from_checkpoint_json(
+        release_roots.models / f"cross_validation/{task.value}/fold_0/config.json"
+    )
+
+    assert recipe.model == released
 
 
 def test_published_checkpoint_config_is_compact_and_complete(

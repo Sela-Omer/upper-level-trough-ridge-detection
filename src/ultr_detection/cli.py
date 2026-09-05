@@ -14,7 +14,7 @@ from ultr_detection.assets import (
     resolve_models,
 )
 from ultr_detection.checkpoints import load_detector, save_detector
-from ultr_detection.config import ModelConfig, Task
+from ultr_detection.config import Task, TrainingRecipe
 from ultr_detection.data import UpperLevelDataset, collate_samples
 from ultr_detection.evaluation import evaluate_out_of_fold
 from ultr_detection.inference import load_scene, predict_sample
@@ -33,28 +33,39 @@ def _train(arguments: argparse.Namespace) -> None:
 
     from ultr_detection.training import DetectionLightningModule
 
+    recipe = TrainingRecipe.from_yaml(arguments.config)
+    if not 0 <= arguments.fold < recipe.cross_validation.folds:
+        raise SystemExit(
+            f"--fold must be between 0 and {recipe.cross_validation.folds - 1} for this recipe"
+        )
     dataset_root = resolve_dataset(
         arguments.dataset,
         revision=arguments.dataset_revision,
         allow_patterns=("data/training_data.nc", "metadata/samples.parquet"),
     )
-    checkpoint_relative = f"cross_validation/{arguments.task.value}/fold_{arguments.fold}"
-    model_root = resolve_models(
-        arguments.models,
-        revision=arguments.model_revision,
-        allow_patterns=(f"{checkpoint_relative}/*",),
-        required=(checkpoint_relative,),
+    settings = recipe.training
+    seed = settings.seed if arguments.seed is None else arguments.seed
+    batch_size = settings.batch_size if arguments.batch_size is None else arguments.batch_size
+    learning_rate = (
+        settings.learning_rate if arguments.learning_rate is None else arguments.learning_rate
     )
-    config = ModelConfig.from_checkpoint_json(model_root / checkpoint_relative / "config.json")
-    L.seed_everything(arguments.seed, workers=True)
+    weight_decay = (
+        settings.weight_decay if arguments.weight_decay is None else arguments.weight_decay
+    )
+    max_epochs = settings.max_epochs if arguments.max_epochs is None else arguments.max_epochs
+    patience = (
+        settings.early_stopping_patience if arguments.patience is None else arguments.patience
+    )
+    config = recipe.model
+    L.seed_everything(seed, workers=True)
     train = UpperLevelDataset.from_local_release(
-        dataset_root, task=arguments.task, fold=arguments.fold, split="train"
+        dataset_root, task=recipe.task, fold=arguments.fold, split="train"
     )
     validation = UpperLevelDataset.from_local_release(
-        dataset_root, task=arguments.task, fold=arguments.fold, split="validation"
+        dataset_root, task=recipe.task, fold=arguments.fold, split="validation"
     )
     loader_options = {
-        "batch_size": arguments.batch_size,
+        "batch_size": batch_size,
         "num_workers": arguments.workers,
         "collate_fn": collate_samples,
         "persistent_workers": arguments.workers > 0,
@@ -63,9 +74,9 @@ def _train(arguments: argparse.Namespace) -> None:
     validation_loader = DataLoader(validation, shuffle=False, **loader_options)
     module = DetectionLightningModule(
         UpperLevelDetector(config),
-        learning_rate=arguments.learning_rate,
-        weight_decay=arguments.weight_decay,
-        max_epochs=arguments.max_epochs,
+        learning_rate=learning_rate,
+        weight_decay=weight_decay,
+        max_epochs=max_epochs,
     )
     logger: Any = False
     if arguments.wandb_project:
@@ -80,14 +91,14 @@ def _train(arguments: argparse.Namespace) -> None:
         save_weights_only=True,
     )
     trainer = L.Trainer(
-        max_epochs=arguments.max_epochs,
+        max_epochs=max_epochs,
         accelerator=arguments.accelerator,
         devices=1,
         deterministic=True,
         logger=logger,
         callbacks=[
             checkpoint,
-            EarlyStopping(monitor="validation/loss", mode="min", patience=arguments.patience),
+            EarlyStopping(monitor="validation/loss", mode="min", patience=patience),
         ],
     )
     trainer.fit(module, train_loader, validation_loader)
@@ -99,14 +110,16 @@ def _train(arguments: argparse.Namespace) -> None:
     Path(arguments.output, "training.json").write_text(
         json.dumps(
             {
-                "task": arguments.task.value,
+                "recipe_schema_version": recipe.schema_version,
+                "recipe": Path(arguments.config).name,
+                "task": recipe.task.value,
                 "fold": arguments.fold,
-                "seed": arguments.seed,
-                "batch_size": arguments.batch_size,
-                "learning_rate": arguments.learning_rate,
-                "weight_decay": arguments.weight_decay,
-                "max_epochs": arguments.max_epochs,
-                "early_stopping_patience": arguments.patience,
+                "seed": seed,
+                "batch_size": batch_size,
+                "learning_rate": learning_rate,
+                "weight_decay": weight_decay,
+                "max_epochs": max_epochs,
+                "early_stopping_patience": patience,
                 "best_validation_loss": float(checkpoint.best_model_score.item()),
             },
             indent=2,
@@ -201,37 +214,40 @@ def _benchmark(arguments: argparse.Namespace) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="ultr")
     subparsers = parser.add_subparsers(required=True)
-    common = argparse.ArgumentParser(add_help=False)
-    common.add_argument(
+    data_common = argparse.ArgumentParser(add_help=False)
+    data_common.add_argument(
         "--dataset",
         default=DEFAULT_DATASET_REPO,
         help="Local dataset path or Hugging Face Dataset repo ID",
     )
-    common.add_argument(
+    data_common.add_argument("--dataset-revision", help="Immutable Dataset commit or tag")
+
+    inference_common = argparse.ArgumentParser(add_help=False, parents=[data_common])
+    inference_common.add_argument(
         "--models",
         default=DEFAULT_MODEL_REPO,
         help="Local model path or Hugging Face Model repo ID",
     )
-    common.add_argument("--dataset-revision", help="Immutable Dataset commit or tag")
-    common.add_argument("--model-revision", help="Immutable Model commit or tag")
-    common.add_argument("--task", required=True, type=_task, choices=list(Task))
+    inference_common.add_argument("--model-revision", help="Immutable Model commit or tag")
+    inference_common.add_argument("--task", required=True, type=_task, choices=list(Task))
 
-    train = subparsers.add_parser("train", parents=[common])
+    train = subparsers.add_parser("train", parents=[data_common])
     train.set_defaults(handler=_train)
-    train.add_argument("--fold", type=int, choices=range(10), required=True)
+    train.add_argument("--config", type=Path, required=True, help="Local YAML training recipe")
+    train.add_argument("--fold", type=int, required=True)
     train.add_argument("--output", required=True)
     train.add_argument("--batch-size", type=int)
     train.add_argument("--workers", type=int, default=2)
-    train.add_argument("--seed", type=int, default=42)
-    train.add_argument("--learning-rate", type=float, default=3e-4)
-    train.add_argument("--weight-decay", type=float, default=1e-5)
-    train.add_argument("--max-epochs", type=int, default=100)
-    train.add_argument("--patience", type=int, default=15)
+    train.add_argument("--seed", type=int)
+    train.add_argument("--learning-rate", type=float)
+    train.add_argument("--weight-decay", type=float)
+    train.add_argument("--max-epochs", type=int)
+    train.add_argument("--patience", type=int)
     train.add_argument("--accelerator", default="auto")
     train.add_argument("--wandb-project")
     train.add_argument("--run-name")
 
-    infer = subparsers.add_parser("infer", parents=[common])
+    infer = subparsers.add_parser("infer", parents=[inference_common])
     infer.set_defaults(handler=_infer)
     source = infer.add_mutually_exclusive_group(required=True)
     source.add_argument("--sample-id", help="Sample from the released benchmark")
@@ -241,7 +257,7 @@ def build_parser() -> argparse.ArgumentParser:
     infer.add_argument("--device", default="cpu")
     infer.add_argument("--output")
 
-    benchmark = subparsers.add_parser("benchmark", parents=[common])
+    benchmark = subparsers.add_parser("benchmark", parents=[inference_common])
     benchmark.set_defaults(handler=_benchmark)
     benchmark.add_argument("--device", default="cpu")
     return parser
@@ -249,8 +265,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> None:
     arguments = build_parser().parse_args(argv)
-    if getattr(arguments, "batch_size", 1) is None:
-        arguments.batch_size = 16 if arguments.task is Task.TROUGH else 8
     arguments.handler(arguments)
 
 
