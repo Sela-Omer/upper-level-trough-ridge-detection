@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ultr-detection"
-version = "0.1.0"
+version = "1.0.0"
 description = "Physics-informed detection of upper-level trough and ridge axes"
 readme = "README.md"
 license = "BSD-3-Clause"

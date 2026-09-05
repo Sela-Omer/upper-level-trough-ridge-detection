@@ -1,18 +1,31 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite the accompanying paper."
+message: "If you use this software, please cite this software release and the accompanying paper."
 title: "Detection of Upper-Level Troughs and Ridges Using Deep Learning"
 type: software
-version: 0.1.0
+version: 1.0.0
 license: BSD-3-Clause
+abstract: >-
+  Reference implementation for detecting upper-level trough and ridge axes
+  from ERA5 500 hPa geopotential height and horizontal wind fields. The
+  software provides reproducible PyTorch Lightning training and inference
+  pipelines for the expert-labelled benchmark described in the accompanying
+  paper.
 authors:
   - family-names: Ariel
     given-names: Ofir
+    affiliation: "Department of Environmental and Earth Sciences, Tel Aviv University"
+    orcid: "https://orcid.org/0009-0009-3545-7688"
   - family-names: Sela
     given-names: Omer
+    affiliation: "Blavatnik School of Computer Science and AI, Tel Aviv University"
+    orcid: "https://orcid.org/0009-0003-6444-6538"
   - family-names: Saaroni
     given-names: Hadas
+    affiliation: "Department of Environmental and Earth Sciences, Tel Aviv University"
   - family-names: Ziv
     given-names: Baruch
+    affiliation: "Department of Natural Sciences, The Open University of Israel"
+    orcid: "https://orcid.org/0000-0003-3053-1374"
 repository-code: "https://github.com/Sela-Omer/upper-level-trough-ridge-detection"
 url: "https://sela-omer.github.io/upper-level-trough-ridge-detection/"
 keywords:
