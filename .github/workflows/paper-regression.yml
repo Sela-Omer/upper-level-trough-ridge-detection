@@ -17,7 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      HF_TOKEN: ${{ secrets.HF_TOKEN }}
       ULTR_RUN_PAPER_TESTS: "1"
       ULTR_DATA_REVISION: f769c77cbfb34c5bd80aa8709798b311055d4306
       ULTR_MODEL_REVISION: 2844092cc9eb856bbfd7a934c39954638ff66f4a
