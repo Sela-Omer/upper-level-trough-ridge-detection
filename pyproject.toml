@@ -44,6 +44,7 @@ ultr = "ultr_detection.cli:main"
 
 [project.urls]
 Homepage = "https://sela-omer.github.io/upper-level-trough-ridge-detection/"
+Paper = "https://doi.org/10.5194/egusphere-2026-5334"
 Repository = "https://github.com/Sela-Omer/upper-level-trough-ridge-detection"
 Dataset = "https://huggingface.co/datasets/Omer-Sela/upper-level-trough-ridge-detection-data"
 Checkpoints = "https://huggingface.co/Omer-Sela/upper-level-trough-ridge-detection-models"

@@ -35,3 +35,18 @@ keywords:
   - meteorology
   - trough detection
   - ridge detection
+preferred-citation:
+  type: article
+  title: "Detection of Upper-Level Troughs and Ridges Using Deep Learning: Application in the Mediterranean"
+  doi: "10.5194/egusphere-2026-5334"
+  url: "https://doi.org/10.5194/egusphere-2026-5334"
+  year: 2026
+  authors:
+    - family-names: Ariel
+      given-names: Ofir
+    - family-names: Sela
+      given-names: Omer
+    - family-names: Saaroni
+      given-names: Hadas
+    - family-names: Ziv
+      given-names: Baruch
