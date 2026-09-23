@@ -64,14 +64,17 @@
       }
     </script>
     <script>
-      // Diagnostic: activate exactly one deferred scientific application selected by ?section=.
-      const diagnosticSection = new URLSearchParams(location.search).get('section');
+      // Diagnostic: activate only the deferred applications selected by ?section= or ?sections=.
+      const diagnosticParams = new URLSearchParams(location.search);
+      const diagnosticSections = new Set(
+        (diagnosticParams.get('sections') || diagnosticParams.get('section') || '').split(',').filter(Boolean),
+      );
       window.IntersectionObserver = class {
         constructor(callback) {
           this.callback = callback;
         }
         observe(element) {
-          if (element.closest('section')?.id === diagnosticSection) {
+          if (diagnosticSections.has(element.closest('section')?.id)) {
             setTimeout(() => this.callback([{ isIntersecting: true, target: element }], this), 0);
           }
         }
