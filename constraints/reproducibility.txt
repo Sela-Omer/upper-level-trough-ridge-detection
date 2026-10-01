@@ -1,6 +1,6 @@
 # Dependency versions validated on Ubuntu 22.04 with Python 3.12.
 # Install with: python -m pip install -c constraints/reproducibility.txt -e ".[dev]"
-huggingface-hub==1.30.0
+huggingface-hub==2.0.0
 lightning==2.6.5
 mypy==2.3.1
 netCDF4==1.7.4
