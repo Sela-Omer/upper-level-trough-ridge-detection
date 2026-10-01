@@ -4,7 +4,7 @@ huggingface-hub==1.30.0
 lightning==2.6.5
 mypy==2.3.1
 netCDF4==1.7.4
-numpy==2.4.2
+numpy==2.5.3
 pandas==3.0.5
 pre-commit==4.6.2
 pyarrow==25.0.1
