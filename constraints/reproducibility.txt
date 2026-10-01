@@ -5,7 +5,7 @@ lightning==2.6.5
 mypy==2.3.1
 netCDF4==1.7.4
 numpy==2.4.2
-pandas==3.0.5
+pandas==3.0.6
 pre-commit==4.6.2
 pyarrow==25.0.1
 pytest==9.1.1
